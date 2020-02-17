@@ -1,9 +1,9 @@
 output "sns_topic_arn_lambda" {
-  value = aws_sns_topic.lambda[count.index].arn
+  value = join("", aws_sns_topic.lambda[*].arn)
 }
 
 output "sns_topic_arn_sqs" {
-  value = aws_sns_topic.sqs[count.index].arn
+  value = join("", aws_sns_topic.sqs[*].arn)
 }
 
 output "lambda_topic_name" {
