@@ -26,7 +26,7 @@ resource "aws_sns_topic" "lambda" {
 resource "aws_sns_topic_subscription" "lambda" {
   count = var.lambda_sns_topic ? 1 : 0
 
-  topic_arn = aws_sns_topic.lambda.arn
+  topic_arn = aws_sns_topic.lambda[count.index].arn
   protocol  = "lambda"
   endpoint  = var.lambda_function_arn
 }
@@ -38,7 +38,7 @@ resource "aws_lambda_permission" "lambda" {
   action        = "lambda:InvokeFunction"
   function_name = var.lambda_function_arn
   principal     = "sns.amazonaws.com"
-  source_arn    = aws_sns_topic.lambda.arn
+  source_arn    = aws_sns_topic.lambda[count.index].arn
 }
 
 # -----------------------------------------------------------------------------
@@ -62,7 +62,7 @@ resource "aws_sns_topic" "sqs" {
 resource "aws_sns_topic_subscription" "sqs" {
   count = var.sqs_sns_topic ? 1 : 0
 
-  topic_arn = aws_sns_topic.sqs.arn
+  topic_arn = aws_sns_topic.sqs[count.index].arn
   protocol  = "sqs"
   endpoint  = var.sqs_arn
 }
@@ -85,7 +85,7 @@ resource "aws_sqs_queue_policy" "_" {
       "Resource": "${var.sqs_arn}",
       "Condition": {
         "ArnEquals": {
-          "aws:SourceArn": "${aws_sns_topic.sqs.arn}"
+          "aws:SourceArn": "${aws_sns_topic.sqs[count.index].arn}"
         }
       }
     }
